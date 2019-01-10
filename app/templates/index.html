@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Telephone!</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body style="background-color:lightgray">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="container-fluid" style="text-align: center">
+				<h1>Telephone!</h1>
+				<p>The statement you see is translated from English to Spanish, Spanish to French, French to German, German to Italian, and finally Italian back to English. Input your guess for what the original English text may be. Good luck!</p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="container" style="text-align: center; margin-bottom: 2%;">
+				<button type="button" class="btn btn-info btn-block" onclick="newTelephone()">New Telephone!</button>
+				<h3 id="statement" style="margin-top: 2%"></h3>
+			</div>
+		</div>
+		<div class="row" style="text-align: center">
+			<div class="container-fluid" style="text-align: center; align-content: center">
+				{% with messages = get_flashed_messages() %} {% if messages %}
+					{% for message in messages %}
+					<div class="alert alert-danger" role="alert">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span class="sr-only">Error:</span>
+						{{ message }}
+					</div>
+					{% endfor %}
+					{% endif %} {% endwith %}
+			</div>			
+		</div>
+		<div class="row">
+			<div class="container">
+				<form action="/check_answer" method="post">
+					<div class="form-group">
+						{{ form.csrf_token }}
+						{{ form.answer(size=100, class_="form-control") }}
+						{{ form.original() }}
+						</br>
+						{{ form.submit(class_="btn btn-primary btn-block") }}
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="container">
+				<p id="originals"></p>
+			</div>
+		</div>
+	</div>
+</body>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script>
+// Get a new translation
+function newTelephone() {
+  var ajax = new XMLHttpRequest();
+  ajax.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+		 var response = JSON.parse(this.responseText)
+     document.getElementById("statement").innerHTML = response['translations'][0]['translation'];
+     document.getElementById("original").value = response['original'];
+    }
+  };
+  ajax.open("GET", "/new_telephone", true);
+  ajax.send();
+}
+
+// Populate the original statements	
+function getOriginalStatements() {
+  var ajax = new XMLHttpRequest();
+  ajax.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+		 var response = JSON.parse(this.responseText)
+     document.getElementById("originals").innerHTML = response;
+    }
+  };
+  ajax.open("GET", "/original_statements", true);
+  ajax.send();
+}
+
+getOriginalStatements();
+</script>
+</html>
