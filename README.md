@@ -8,3 +8,6 @@ Translates a statement in our database from English to Spanish, Spanish to Frenc
 - SQLite
 - Bootstrap
 - HTML, CSS, JS 
+
+### Purpose
+A two day warm up project for CSE 5914
